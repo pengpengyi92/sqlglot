@@ -2149,16 +2149,13 @@ class Parser:
 
         if not advance:
             self._retreat(index)
-        else:
-            tokens = self._tokens
-            for i in range(index, self._index - 1):
-                comments = tokens[i].comments
-                if comments:
-                    following = tokens[i + 1]
-                    comments.extend(following.comments)
-                    following.comments = comments
-                    tokens[i].comments = []
-            self._prev_comments = self._prev.comments
+        elif len(texts) > 1:
+            matched = self._tokens[index : self._index]
+            comments = [comment for token in matched for comment in token.comments]
+            if comments:
+                for token in matched:
+                    token.comments = []
+                self._prev.comments = self._prev_comments = comments
 
         return True
 
